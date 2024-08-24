@@ -2,7 +2,7 @@ import { Request } from "express";
 import { TryCatch } from "../middlewares/error.js";
 import { Product } from "../models/product.js";
 import ErrorHandler from "../utils/utility-class.js";
-import { NewProductRequestBody, SearchRequestQuery } from "../types/types.js";
+import { BaseQuery, NewProductRequestBody, SearchRequestQuery } from "../types/types.js";
 import { rm } from "fs";
 
 export const newProduct = TryCatch(
@@ -133,16 +133,20 @@ export const getAdminProducts = TryCatch(async (req, res, next) => {
         const limit = Number(process.env.PRODUCT_PER_PAGE) || 8;
         const skip = (page - 1) * limit;
 
-    const baseQuery = {
-        name: {
+    const baseQuery: BaseQuery = {};
+
+    if (search)
+        baseQuery.name = {
         $regex: search,
         $options: "i",
-        },
-        price: {
-            $lte: Number(price),
-        },
-        category,
-    };
+        };
+
+    if (price)
+        baseQuery.price = {
+        $lte: Number(price),
+        };
+
+    if (category) baseQuery.category = category;
     const products = await Product.find(baseQuery);
 
 

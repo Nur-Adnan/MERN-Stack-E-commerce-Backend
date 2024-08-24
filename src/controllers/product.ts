@@ -31,3 +31,22 @@ export const newProduct = TryCatch(
     });
   }
 );
+
+
+// Revalidate on New,Update,Delete Product & on New Order
+export const getlatestProducts = TryCatch(async (req, res, next) => {
+    let products;
+
+    products = await redis.get("latest-products");
+
+    if (products) products = JSON.parse(products);
+    else {
+      products = await Product.find({}).sort({ createdAt: -1 }).limit(5);
+      await redis.setex("latest-products", redisTTL, JSON.stringify(products));
+    }
+
+    return res.status(200).json({
+      success: true,
+      products,
+    });
+  });

@@ -1,5 +1,5 @@
 import express from "express";
-import {getAllCategories, getlatestProducts, newProduct} from "../controllers/product.js";
+import {getAdminProducts, getAllCategories, getlatestProducts, newProduct} from "../controllers/product.js";
 import { adminOnly } from "../middlewares/auth.js";
 import { singleUpload } from "../middlewares/multer.js";
 
@@ -13,5 +13,8 @@ app.get("/latest", getlatestProducts);
 
 //To get all unique Categories  - /api/v1/product/categories
 app.get("/categories", getAllCategories);
+
+//To get all Products   - /api/v1/product/admin-products
+app.get("/admin-products", adminOnly, getAdminProducts);
 
 export default app;

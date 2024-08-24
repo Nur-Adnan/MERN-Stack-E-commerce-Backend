@@ -54,3 +54,14 @@ export const getAllCategories = TryCatch(async (req, res, next) => {
       categories,
     });
   });
+
+
+  // Revalidate on New,Update,Delete Product & on New Order
+export const getAdminProducts = TryCatch(async (req, res, next) => {
+
+    const products = await Product.find({});
+    return res.status(200).json({
+      success: true,
+      products,
+    });
+  });

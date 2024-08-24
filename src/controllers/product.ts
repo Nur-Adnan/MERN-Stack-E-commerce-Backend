@@ -35,18 +35,22 @@ export const newProduct = TryCatch(
 
 // Revalidate on New,Update,Delete Product & on New Order
 export const getlatestProducts = TryCatch(async (req, res, next) => {
-    let products;
 
-    products = await redis.get("latest-products");
-
-    if (products) products = JSON.parse(products);
-    else {
-      products = await Product.find({}).sort({ createdAt: -1 }).limit(5);
-      await redis.setex("latest-products", redisTTL, JSON.stringify(products));
-    }
+    const products = await Product.find({}).sort({ createdAt: -1 }).limit(5);
 
     return res.status(200).json({
       success: true,
       products,
+    });
+  });
+
+
+  // Revalidate on New,Update,Delete Product & on New Order
+export const getAllCategories = TryCatch(async (req, res, next) => {
+
+    const categories = await Product.distinct("category");
+    return res.status(200).json({
+      success: true,
+      categories,
     });
   });

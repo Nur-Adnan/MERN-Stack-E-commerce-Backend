@@ -1,3 +1,10 @@
 import multer from "multer";
-export const singleUpload = multer().single("photo");
-export const mutliUpload = multer().array("photos", 5);
+const storage = multer.diskStorage({
+    destination(req, file, callback) {
+        callback(null, "uploads");
+    },
+    filename(req, file, callback) {
+        callback(null, file.originalname);
+    },
+});
+export const singleUpload = multer({ storage }).single("photo");

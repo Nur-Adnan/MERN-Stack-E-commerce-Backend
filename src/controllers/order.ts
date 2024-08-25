@@ -1,8 +1,9 @@
 import { Request } from "express";
-import { invalidateCache } from "../utils/features.js";
+import { invalidateCache, reduceStock } from "../utils/features.js";
 import ErrorHandler from "../utils/utility-class.js";
 import { TryCatch } from "../middlewares/error.js";
 import { NewOrderRequestBody } from "../types/types.js";
+import { Order } from "../models/order.js";
 
 export const newOrder = TryCatch(
     async (req: Request<{}, {}, NewOrderRequestBody>, res, next) => {
@@ -37,8 +38,8 @@ export const newOrder = TryCatch(
         product: true,
         order: true,
         admin: true,
-        userId: user,
-        productId: order.orderItems.map((i) => String(i.productId)),
+        // userId: user,
+        // productId: order.orderItems.map((i) => String(i.productId)),
       });
 
       return res.status(201).json({

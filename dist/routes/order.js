@@ -1,6 +1,6 @@
 import express from "express";
 import { adminOnly } from "../middlewares/auth.js";
-import { allOrders, myOrders, 
+import { allOrders, getSingleOrder, myOrders, 
 //   allOrders,
 //   deleteOrder,
 //   getSingleOrder,
@@ -15,9 +15,9 @@ app.post("/new", newOrder);
 app.get("/my", myOrders);
 // route - /api/v1/order/my
 app.get("/all", adminOnly, allOrders);
-// app
-//   .route("/:id")
-//   .get(getSingleOrder)
+app
+    .route("/:id")
+    .get(getSingleOrder);
 //   .put(adminOnly, processOrder)
 //   .delete(adminOnly, deleteOrder);
 export default app;

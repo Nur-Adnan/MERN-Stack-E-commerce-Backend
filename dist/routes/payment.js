@@ -5,7 +5,7 @@ import { allCoupons, applyDiscount,
 deleteCoupon, getCoupon, newCoupon, updateCoupon, } from "../controllers/payment.js";
 const app = express.Router();
 // route - /api/v1/payment/create
-// app.post("/create", createPaymentIntent);
+app.post("/create", createPaymentIntent);
 // route - /api/v1/payment/discount?coupon=ADNAN
 app.get("/discount", applyDiscount);
 // route - /api/v1/payment/coupon/new

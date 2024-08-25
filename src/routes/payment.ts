@@ -13,7 +13,7 @@ import {
 const app = express.Router();
 
 // route - /api/v1/payment/create
-// app.post("/create", createPaymentIntent);
+app.post("/create", createPaymentIntent);
 
 // route - /api/v1/payment/discount?coupon=ADNAN
 app.get("/discount", applyDiscount);

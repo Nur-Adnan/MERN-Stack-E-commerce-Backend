@@ -3,7 +3,7 @@ import { adminOnly } from "../middlewares/auth.js";
 import {
   allCoupons,
   applyDiscount,
-//   createPaymentIntent,
+  createPaymentIntent,
   deleteCoupon,
   getCoupon,
   newCoupon,

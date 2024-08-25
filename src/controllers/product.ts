@@ -56,7 +56,15 @@ export const getlatestProducts = TryCatch(async (req, res, next) => {
   // Revalidate on New,Update,Delete Product & on New Order
 export const getAllCategories = TryCatch(async (req, res, next) => {
 
-    const categories = await Product.distinct("category");
+    let categories;
+
+    if(myCache.has("categories"))
+        categories = JSON.parse(myCache.get("categories") as string);
+    else{
+        categories = await Product.distinct("category");
+        myCache.set("categories", JSON.stringify(categories));
+    }
+
     return res.status(200).json({
       success: true,
       categories,

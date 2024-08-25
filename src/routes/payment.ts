@@ -2,7 +2,7 @@ import express from "express";
 import { adminOnly } from "../middlewares/auth.js";
 import {
 //   allCoupons,
-//   applyDiscount,
+  applyDiscount,
 //   createPaymentIntent,
 //   deleteCoupon,
 //   getCoupon,
@@ -15,8 +15,8 @@ const app = express.Router();
 // route - /api/v1/payment/create
 // app.post("/create", createPaymentIntent);
 
-// route - /api/v1/payment/coupon/new
-// app.get("/discount", applyDiscount);
+// route - /api/v1/payment/discount?coupon=ADNAN
+app.get("/discount", applyDiscount);
 
 // route - /api/v1/payment/coupon/new
 app.post("/coupon/new", newCoupon);

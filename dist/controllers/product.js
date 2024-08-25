@@ -2,6 +2,7 @@ import { TryCatch } from "../middlewares/error.js";
 import { Product } from "../models/product.js";
 import ErrorHandler from "../utils/utility-class.js";
 import { rm } from "fs";
+/* import {faker} from "@faker-js/faker"; */
 export const newProduct = TryCatch(async (req, res, next) => {
     const { name, price, stock, category } = req.body;
     const photo = req.file;
@@ -133,3 +134,28 @@ export const getAllProducts = TryCatch(async (req, res, next) => {
         totalPage,
     });
 });
+/*
+    const generateRandomProducts = async (count: number = 10) => {
+    const products = [];
+
+    for (let i = 0; i < count; i++) {
+        const product = {
+        name: faker.commerce.productName(),
+        photo: "uploads\ead2a88c-e2ab-4f06-964d-89c2a683dce6.jpg",
+        price: faker.commerce.price({ min: 1500, max: 80000, dec: 0 }),
+        stock: faker.commerce.price({ min: 0, max: 100, dec: 0 }),
+        category: faker.commerce.department(),
+        createdAt: new Date(faker.date.past()),
+        updatedAt: new Date(faker.date.recent()),
+        __v: 0,
+        };
+
+        products.push(product);
+    }
+
+    await Product.create(products);
+
+    console.log({ succecss: true });
+    };
+        generateRandomProducts(40);
+*/

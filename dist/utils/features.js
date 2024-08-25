@@ -8,17 +8,17 @@ export const connectDB = (uri) => {
         .then((c) => console.log(`DB Connected to ${c.connection.host}`))
         .then((e) => console.log(e));
 };
-export const invalidateCache = async ({ product, order, admin, userId, orderId, }) => {
+export const invalidateCache = async ({ product, order, admin, userId, orderId, productId, }) => {
     if (product) {
         const productKeys = [
             "latest-products",
             "categories",
-            "all-products",
+            "all-products", `product-${productId}`
         ];
-        const products = await Product.find({}).select("_id");
-        products.forEach(i => {
-            productKeys.push(`product-${i._id}`);
-        });
+        if (typeof productId === "string")
+            productKeys.push(`product-${productId}`);
+        if (typeof productId === "object")
+            productId.forEach((i) => productKeys.push(`product-${i}`));
         myCache.del(productKeys);
     }
     if (order) {

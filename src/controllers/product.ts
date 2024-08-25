@@ -74,8 +74,15 @@ export const getAllCategories = TryCatch(async (req, res, next) => {
 
   // Revalidate on New,Update,Delete Product & on New Order
 export const getAdminProducts = TryCatch(async (req, res, next) => {
+    let products;
 
-    const products = await Product.find({});
+    if(myCache.has("all-products"))
+        products = JSON.parse(myCache.get("all-products") as string);
+    else{
+        products = await Product.find({});
+        myCache.set("all-products", JSON.stringify(products));
+    }
+
     return res.status(200).json({
       success: true,
       products,

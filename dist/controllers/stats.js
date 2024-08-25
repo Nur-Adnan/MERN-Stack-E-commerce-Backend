@@ -3,6 +3,7 @@ import { TryCatch } from "../middlewares/error.js";
 import { Order } from "../models/order.js";
 import { Product } from "../models/product.js";
 import { User } from "../models/user.js";
+import { calculatePercentage } from "../utils/features.js";
 export const getDashboardStats = TryCatch(async (req, res, next) => {
     let stats = {};
     if (myCache.has("admin-stats"))
@@ -50,6 +51,14 @@ export const getDashboardStats = TryCatch(async (req, res, next) => {
             },
         });
         const [thisMonthProducts, thisMonthUsers, thisMonthOrders, lastMonthProducts, lastMonthUsers, lastMonthOrders] = await Promise.all([thisMonthOrdersPromise, thisMonthUsersPromise, thisMonthUsersPromise, lastMonthOrdersPromise, lastMonthOrdersPromise, lastMonthUsersPromise]);
+        const userChangePercent = calculatePercentage(thisMonthUsers.length, lastMonthUsers.length);
+        const productChangePercent = calculatePercentage(thisMonthProducts.length, lastMonthProducts.length);
+        const orderChangePercent = calculatePercentage(thisMonthOrders.length, lastMonthOrders.length);
+        stats = {
+            productChangePercent,
+            userChangePercent,
+            orderChangePercent,
+        };
     }
     return res.status(200).json({
         success: true,

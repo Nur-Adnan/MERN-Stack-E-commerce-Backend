@@ -196,3 +196,17 @@ export const getAdminProducts = TryCatch(async (req, res, next) => {
     };
         generateRandomProducts(40);
 */
+
+/*
+    const deleteRandomsProducts = async (count: number = 10) => {
+    const products = await Product.find({}).skip(2);
+
+    for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        await product.deleteOne();
+    }
+
+    console.log({ succecss: true });
+    };
+    deleteRandomsProducts(78);
+*/

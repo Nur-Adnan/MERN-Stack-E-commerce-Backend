@@ -68,7 +68,7 @@ export const newOrder = TryCatch(async (req, res, next) => {
         product: true,
         order: true,
         admin: true,
-        // userId: user,
+        userId: user,
         // productId: order.orderItems.map((i) => String(i.productId)),
     });
     return res.status(201).json({
@@ -97,8 +97,8 @@ export const processOrder = TryCatch(async (req, res, next) => {
         product: false,
         order: true,
         admin: true,
-        //   userId: order.user,
-        //   orderId: String(order._id),
+        userId: order.user,
+        orderId: String(order._id),
     });
     return res.status(200).json({
         success: true,
@@ -115,8 +115,8 @@ export const deleteOrder = TryCatch(async (req, res, next) => {
         product: false,
         order: true,
         admin: true,
-        //   userId: order.user,
-        //   orderId: String(order._id),
+        userId: order.user,
+        orderId: String(order._id),
     });
     return res.status(200).json({
         success: true,

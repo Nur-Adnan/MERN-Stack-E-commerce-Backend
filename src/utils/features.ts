@@ -31,7 +31,7 @@ export const invalidateCache = async ({
 
             if (typeof productId === "object")
               productId.forEach((i) => productKeys.push(`product-${i}`));
-            
+
             myCache.del(productKeys)
         }
         if(order){
@@ -53,3 +53,6 @@ export const invalidateCache = async ({
           await product.save();
         }
       };
+
+
+      

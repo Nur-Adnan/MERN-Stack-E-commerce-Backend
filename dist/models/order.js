@@ -1,13 +1,70 @@
 import mongoose from "mongoose";
 const schema = new mongoose.Schema({
-    code: {
+    shippingInfo: {
+        address: {
+            type: String,
+            required: true,
+        },
+        city: {
+            type: String,
+            required: true,
+        },
+        state: {
+            type: String,
+            required: true,
+        },
+        country: {
+            type: String,
+            required: true,
+        },
+        pinCode: {
+            type: Number,
+            required: true,
+        },
+    },
+    user: {
         type: String,
-        required: [true, "Please enter the Coupon Code"],
-        unique: true,
+        ref: "User",
+        required: true,
     },
-    amount: {
+    subtotal: {
         type: Number,
-        required: [true, "Please enter the Discount Amount"],
+        required: true,
     },
+    tax: {
+        type: Number,
+        required: true,
+    },
+    shippingCharges: {
+        type: Number,
+        required: true,
+    },
+    discount: {
+        type: Number,
+        required: true,
+    },
+    total: {
+        type: Number,
+        required: true,
+    },
+    status: {
+        type: String,
+        enum: ["Processing", "Shipped", "Delivered"],
+        default: "Processing",
+    },
+    orderItems: [
+        {
+            name: String,
+            photo: String,
+            price: Number,
+            quantity: Number,
+            productId: {
+                type: mongoose.Types.ObjectId,
+                ref: "Product",
+            },
+        },
+    ],
+}, {
+    timestamps: true,
 });
-export const Coupon = mongoose.model("Coupon", schema);
+export const Order = mongoose.model("Order", schema);

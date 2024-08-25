@@ -2,6 +2,9 @@ import express from "express";
 import { connectDB } from "./utils/features.js";
 import { errorMiddleware } from "./middlewares/error.js";
 import NodeCache from "node-cache";
+import { config } from "dotenv";
+import morgan from "morgan";
+
 // Importing Routes
 import userRoute from "./routes/user.js";
 import productRoute from "./routes/products.js";
@@ -10,9 +13,14 @@ import orderRoute from "./routes/order.js";
 // import dashboardRoute from "./routes/stats.js";
 
 
-const port = 3000;
+config({
+    path: "./.env",
+  });
 
-connectDB();
+const port = process.env.PORT || 4000;
+const mongoURI = process.env.MONGO_URI || "";
+
+connectDB(mongoURI);
 
 export const myCache = new NodeCache();
 

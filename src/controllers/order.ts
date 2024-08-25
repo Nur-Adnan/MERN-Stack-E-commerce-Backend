@@ -57,7 +57,7 @@ export const newOrder = TryCatch(
 
     const key = `my-orders-${user}`;
 
-    if(myCache.has(key)) orders = JSON.parse(myCache.get("") as string);
+    if(myCache.has(key)) orders = JSON.parse(myCache.get(key) as string);
     else {
         orders = await Order.find({user})
         myCache.set(key, JSON.stringify(orders));
@@ -70,4 +70,18 @@ export const newOrder = TryCatch(
   });
 
 
+  export const allOrders = TryCatch(async (req, res, next) => {
+    const key = `all-orders`;
 
+    let orders = [];
+
+    if(myCache.has(key)) orders = JSON.parse(myCache.get(key) as string);
+    else {
+        orders = await Order.find()
+        myCache.set(key, JSON.stringify(orders));
+    }
+    return res.status(200).json({
+      success: true,
+      orders,
+    });
+  });

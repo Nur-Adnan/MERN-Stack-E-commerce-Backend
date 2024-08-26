@@ -62,21 +62,35 @@ export const getDashboardStats = TryCatch(async (req, res, next) => {
         //     $lte: today,
         //   },
         // });
-        const [thisMonthProducts, thisMonthUsers, thisMonthOrders, lastMonthProducts, lastMonthUsers, lastMonthOrders,] = await Promise.all([
+        const [thisMonthProducts, thisMonthUsers, thisMonthOrders, lastMonthProducts, lastMonthUsers, lastMonthOrders, productsCount, usersCount, allOrders,] = await Promise.all([
             thisMonthProductsPromise,
             thisMonthUsersPromise,
             thisMonthOrdersPromise,
             lastMonthProductsPromise,
             lastMonthUsersPromise,
             lastMonthOrdersPromise,
+            Product.countDocuments(),
+            User.countDocuments(),
+            Order.find({}).select("total"),
         ]);
+        const thisMonthRevenue = thisMonthOrders.reduce((total, order) => total + (order.total || 0), 0);
+        const lastMonthRevenue = lastMonthOrders.reduce((total, order) => total + (order.total || 0), 0);
         const changePercent = {
+            revenue: calculatePercentage(thisMonthRevenue, lastMonthRevenue),
             product: calculatePercentage(thisMonthProducts.length, lastMonthProducts.length),
             user: calculatePercentage(thisMonthUsers.length, lastMonthUsers.length),
             order: calculatePercentage(thisMonthOrders.length, lastMonthOrders.length)
         };
+        const revenue = allOrders.reduce((total, order) => total + (order.total || 0), 0);
+        const count = {
+            revenue,
+            product: productsCount,
+            user: usersCount,
+            order: allOrders.length,
+        };
         stats = {
             changePercent,
+            count,
         };
     }
     return res.status(200).json({

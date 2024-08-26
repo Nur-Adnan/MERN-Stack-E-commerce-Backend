@@ -80,6 +80,9 @@ export const getDashboardStats = TryCatch(async(req, res, next) => {
         lastMonthProducts,
         lastMonthUsers,
         lastMonthOrders,
+        productsCount,
+        usersCount,
+        allOrders,
       ] = await Promise.all([
         thisMonthProductsPromise,
         thisMonthUsersPromise,
@@ -87,9 +90,23 @@ export const getDashboardStats = TryCatch(async(req, res, next) => {
         lastMonthProductsPromise,
         lastMonthUsersPromise,
         lastMonthOrdersPromise,
+        Product.countDocuments(),
+        User.countDocuments(),
+        Order.find({}).select("total"),
       ]);
 
+        const thisMonthRevenue = thisMonthOrders.reduce(
+            (total, order) => total + (order.total || 0),
+            0
+        );
+
+        const lastMonthRevenue = lastMonthOrders.reduce(
+            (total, order) => total + (order.total || 0),
+            0
+        );
+
         const changePercent = {
+            revenue: calculatePercentage(thisMonthRevenue, lastMonthRevenue),
             product: calculatePercentage(
             thisMonthProducts.length,
             lastMonthProducts.length
@@ -100,8 +117,22 @@ export const getDashboardStats = TryCatch(async(req, res, next) => {
             lastMonthOrders.length
             )
         }
+
+        const revenue = allOrders.reduce(
+            (total, order) => total + (order.total || 0),
+            0
+          );
+
+        const count = {
+        revenue,
+        product: productsCount,
+        user: usersCount,
+        order: allOrders.length,
+        };
+
         stats = {
             changePercent,
+            count,
         }
     }
 

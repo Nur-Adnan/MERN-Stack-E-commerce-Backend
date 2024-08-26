@@ -89,14 +89,19 @@ export const getDashboardStats = TryCatch(async(req, res, next) => {
         lastMonthOrdersPromise,
       ]);
 
-      const userChangePercent = calculatePercentage(thisMonthUsers.length, lastMonthUsers.length)
-      const productChangePercent = calculatePercentage(thisMonthProducts.length, lastMonthProducts.length)
-      const orderChangePercent = calculatePercentage(thisMonthOrders.length, lastMonthOrders.length)
-
+        const changePercent = {
+            product: calculatePercentage(
+            thisMonthProducts.length,
+            lastMonthProducts.length
+            ),
+            user: calculatePercentage(thisMonthUsers.length, lastMonthUsers.length),
+            order: calculatePercentage(
+            thisMonthOrders.length,
+            lastMonthOrders.length
+            )
+        }
         stats = {
-            productChangePercent,
-            userChangePercent,
-            orderChangePercent
+            changePercent,
         }
     }
 

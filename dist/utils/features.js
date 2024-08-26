@@ -8,12 +8,12 @@ export const connectDB = (uri) => {
         .then((c) => console.log(`DB Connected to ${c.connection.host}`))
         .then((e) => console.log(e));
 };
-export const invalidateCache = async ({ product, order, admin, userId, orderId, productId, }) => {
+export const invalidateCache = ({ product, order, admin, userId, orderId, productId, }) => {
     if (product) {
         const productKeys = [
             "latest-products",
             "categories",
-            "all-products", `product-${productId}`
+            "all-products",
         ];
         if (typeof productId === "string")
             productKeys.push(`product-${productId}`);
@@ -26,6 +26,12 @@ export const invalidateCache = async ({ product, order, admin, userId, orderId, 
         myCache.del(ordersKeys);
     }
     if (admin) {
+        myCache.del([
+            "admin-stats",
+            "admin-pie-charts",
+            "admin-bar-charts",
+            "admin-line-charts",
+        ]);
     }
 };
 export const reduceStock = async (orderItems) => {

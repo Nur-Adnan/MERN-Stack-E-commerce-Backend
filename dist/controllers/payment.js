@@ -8,7 +8,7 @@ export const createPaymentIntent = TryCatch(async (req, res, next) => {
         return next(new ErrorHandler("Please enter amount", 400));
     const paymentIntent = await stripe.paymentIntents.create({
         amount: Number(amount) * 100,
-        currency: "inr",
+        currency: "bdt",
     });
     return res.status(201).json({
         success: true,

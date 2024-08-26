@@ -195,6 +195,17 @@ export const getDashboardStats = TryCatch(async(req, res, next) => {
 
 
 
-export const getPieCharts = TryCatch(async() => {})
+export const getPieCharts = TryCatch(async() => {
+    let charts;
+    if(myCache.has("admin-pie-charts"))
+        charts = JSON.parse(myCache.get("admin-pie-charts") as string);
+    else{
+
+    }
+    return res.status(200).json({
+        success: true,
+        charts,
+    })
+})
 export const getBarCharts = TryCatch(async() => {})
 export const getLineCharts = TryCatch(async() => {})

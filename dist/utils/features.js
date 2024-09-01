@@ -1,14 +1,31 @@
 import mongoose from "mongoose";
 import { Product } from "../models/product.js";
 import { myCache } from "../app.js";
+import { Review } from "../models/review.js";
+export const findAverageRatings = async (productId) => {
+    let totalRating = 0;
+    const reviews = await Review.find({ product: productId });
+    reviews.forEach((review) => {
+        totalRating += review.rating;
+    });
+    const averateRating = Math.floor(totalRating / reviews.length) || 0;
+    return {
+        numOfReviews: reviews.length,
+        ratings: averateRating,
+    };
+};
 export const connectDB = (uri) => {
-    mongoose.connect(uri, {
+    mongoose
+        .connect(uri, {
         dbName: "Ecommerce",
     })
         .then((c) => console.log(`DB Connected to ${c.connection.host}`))
         .then((e) => console.log(e));
 };
-export const invalidateCache = ({ product, order, admin, userId, orderId, productId, }) => {
+export const invalidateCache = ({ product, order, admin, userId, review, orderId, productId, }) => {
+    if (review) {
+        myCache.del(`reviews-${productId}`);
+    }
     if (product) {
         const productKeys = [
             "latest-products",
@@ -22,7 +39,11 @@ export const invalidateCache = ({ product, order, admin, userId, orderId, produc
         myCache.del(productKeys);
     }
     if (order) {
-        const ordersKeys = ["all-orders", `my-orders-${userId}`, `order-${orderId}`];
+        const ordersKeys = [
+            "all-orders",
+            `my-orders-${userId}`,
+            `order-${orderId}`,
+        ];
         myCache.del(ordersKeys);
     }
     if (admin) {

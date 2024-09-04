@@ -1,6 +1,7 @@
+import { v2 as cloudinary } from "cloudinary";
+import { myCache } from "../app.js";
 import mongoose from "mongoose";
 import { Product } from "../models/product.js";
-import { myCache } from "../app.js";
 import { Review } from "../models/review.js";
 export const findAverageRatings = async (productId) => {
     let totalRating = 0;
@@ -14,6 +15,35 @@ export const findAverageRatings = async (productId) => {
         ratings: averateRating,
     };
 };
+const getBase64 = (file) => `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+export const uploadToCloudinary = async (files) => {
+    const promises = files.map(async (file) => {
+        return new Promise((resolve, reject) => {
+            cloudinary.uploader.upload(getBase64(file), (error, result) => {
+                if (error)
+                    return reject(error);
+                resolve(result);
+            });
+        });
+    });
+    const result = await Promise.all(promises);
+    return result.map((i) => ({
+        public_id: i.public_id,
+        url: i.secure_url,
+    }));
+};
+export const deleteFromCloudinary = async (publicIds) => {
+    const promises = publicIds.map((id) => {
+        return new Promise((resolve, reject) => {
+            cloudinary.uploader.destroy(id, (error, result) => {
+                if (error)
+                    return reject(error);
+                resolve();
+            });
+        });
+    });
+    await Promise.all(promises);
+};
 export const connectDB = (uri) => {
     mongoose
         .connect(uri, {
@@ -22,9 +52,9 @@ export const connectDB = (uri) => {
         .then((c) => console.log(`DB Connected to ${c.connection.host}`))
         .then((e) => console.log(e));
 };
-export const invalidateCache = ({ product, order, admin, userId, review, orderId, productId, }) => {
+export const invalidateCache = async ({ product, order, admin, review, userId, orderId, productId, }) => {
     if (review) {
-        myCache.del(`reviews-${productId}`);
+        await myCache.del(`reviews-${productId}`);
     }
     if (product) {
         const productKeys = [
@@ -36,7 +66,7 @@ export const invalidateCache = ({ product, order, admin, userId, review, orderId
             productKeys.push(`product-${productId}`);
         if (typeof productId === "object")
             productId.forEach((i) => productKeys.push(`product-${i}`));
-        myCache.del(productKeys);
+        await myCache.del(productKeys);
     }
     if (order) {
         const ordersKeys = [
@@ -44,10 +74,10 @@ export const invalidateCache = ({ product, order, admin, userId, review, orderId
             `my-orders-${userId}`,
             `order-${orderId}`,
         ];
-        myCache.del(ordersKeys);
+        await myCache.del(ordersKeys);
     }
     if (admin) {
-        myCache.del([
+        await myCache.del([
             "admin-stats",
             "admin-pie-charts",
             "admin-bar-charts",

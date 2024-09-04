@@ -1,9 +1,9 @@
-import mongoose, { Document } from "mongoose";
-import { InvalidateCacheProps, OrderItemType } from "../types/types.js";
-import { Product } from "../models/product.js";
+import { UploadApiResponse, v2 as cloudinary } from "cloudinary";
 import { myCache } from "../app.js";
-import { Order } from "../models/order.js";
+import mongoose, { Document } from "mongoose";
+import { Product } from "../models/product.js";
 import { Review } from "../models/review.js";
+import { InvalidateCacheProps, OrderItemType } from "../types/types.js";
 
 export const findAverageRatings = async (
   productId: mongoose.Types.ObjectId
@@ -23,6 +23,40 @@ export const findAverageRatings = async (
   };
 };
 
+const getBase64 = (file: Express.Multer.File) =>
+  `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+
+export const uploadToCloudinary = async (files: Express.Multer.File[]) => {
+  const promises = files.map(async (file) => {
+    return new Promise<UploadApiResponse>((resolve, reject) => {
+      cloudinary.uploader.upload(getBase64(file), (error, result) => {
+        if (error) return reject(error);
+        resolve(result!);
+      });
+    });
+  });
+
+  const result = await Promise.all(promises);
+
+  return result.map((i) => ({
+    public_id: i.public_id,
+    url: i.secure_url,
+  }));
+};
+
+export const deleteFromCloudinary = async (publicIds: string[]) => {
+  const promises = publicIds.map((id) => {
+    return new Promise<void>((resolve, reject) => {
+      cloudinary.uploader.destroy(id, (error, result) => {
+        if (error) return reject(error);
+        resolve();
+      });
+    });
+  });
+
+  await Promise.all(promises);
+};
+
 export const connectDB = (uri: string) => {
   mongoose
     .connect(uri, {
@@ -32,19 +66,18 @@ export const connectDB = (uri: string) => {
     .then((e) => console.log(e));
 };
 
-export const invalidateCache = ({
+export const invalidateCache = async ({
   product,
   order,
   admin,
-  userId,
   review,
+  userId,
   orderId,
   productId,
 }: InvalidateCacheProps) => {
   if (review) {
-    myCache.del(`reviews-${productId}`);
+    await myCache.del(`reviews-${productId}`);
   }
-
   if (product) {
     const productKeys: string[] = [
       "latest-products",
@@ -57,7 +90,7 @@ export const invalidateCache = ({
     if (typeof productId === "object")
       productId.forEach((i) => productKeys.push(`product-${i}`));
 
-    myCache.del(productKeys);
+    await myCache.del(productKeys);
   }
   if (order) {
     const ordersKeys: string[] = [
@@ -65,10 +98,10 @@ export const invalidateCache = ({
       `my-orders-${userId}`,
       `order-${orderId}`,
     ];
-    myCache.del(ordersKeys);
+    await myCache.del(ordersKeys);
   }
   if (admin) {
-    myCache.del([
+    await myCache.del([
       "admin-stats",
       "admin-pie-charts",
       "admin-bar-charts",

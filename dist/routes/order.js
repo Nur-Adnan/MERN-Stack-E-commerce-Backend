@@ -1,13 +1,6 @@
 import express from "express";
 import { adminOnly } from "../middlewares/auth.js";
-import { allOrders, deleteOrder, getSingleOrder, myOrders, 
-//   allOrders,
-//   deleteOrder,
-//   getSingleOrder,
-//   myOrders,
-newOrder, processOrder,
-//   processOrder,
- } from "../controllers/order.js";
+import { allOrders, deleteOrder, getSingleOrder, myOrders, newOrder, processOrder, } from "../controllers/order.js";
 const app = express.Router();
 // route - /api/v1/order/new
 app.post("/new", newOrder);

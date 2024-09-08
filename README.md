@@ -36,6 +36,7 @@ A comprehensive e-commerce platform built with modern web technologies to provid
 
 - **Frontend:**
   - React
+  - SCSS
   - TypeScript
   - JavaScript
   - Framer Motion (for smooth animations)
